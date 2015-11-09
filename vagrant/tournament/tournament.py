@@ -13,14 +13,33 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
-
+    DB = connect()
+    c = DB.cursor()
+    c.execute("DELETE FROM matches;")
+    DB.commit()
+    DB.close()
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    DB = connect()
+    c = DB.cursor()
+    c.execute("DELETE FROM players;")
+    DB.commit()
+    DB.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    DB = connect()
+    c = DB.cursor()
+    c.execute("SELECT COUNT(*) FROM players;")
+    result = c.fetchone()[0]
+    # c.execute("SELECT * FROM players;")
+    # print c.fetchone()
+
+    DB.close()
+    
+    return result
 
 
 def registerPlayer(name):
@@ -33,6 +52,11 @@ def registerPlayer(name):
       name: the player's full name (need not be unique).
     """
 
+    DB = connect()
+    c = DB.cursor()
+    c.execute("INSERT INTO players (name) VALUES (%s);", (name, ))
+    DB.commit()
+    DB.close()
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
@@ -48,6 +72,20 @@ def playerStandings():
         matches: the number of matches the player has played
     """
 
+    DB = connect()
+    c = DB.cursor()
+    c.execute('''SELECT players.id, players.name, w.wins, tm.total_matches FROM players 
+        LEFT JOIN (SELECT players.id, count(winner_id) as wins from players left join matches on players.id = winner_id group by players.id) as w on players.id = w.id
+        LEFT JOIN (SELECT players.id, count(match_id) as total_matches from players left join matches on players.id = winner_id or players.id = loser_id group by players.id) as tm on players.id = tm.id
+        ORDER BY w.wins DESC;''')
+
+    result = c.fetchall()
+    #print result
+
+    DB.close()
+
+    return result    
+    # return c.fetchall()
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -56,7 +94,13 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+
+    DB = connect()
+    c = DB.cursor()
+    c.execute("INSERT INTO matches (winner_id, loser_id) VALUES (%s, %s);", (winner, loser))
+
+    DB.commit()
+    DB.close()
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -73,5 +117,28 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    result = None
 
+    DB = connect()
+    c = DB.cursor()
 
+    c.execute('''SELECT COUNT(*) FROM players''')
+    player_num = c.fetchone()[0]
+
+    for i in range(0, player_num, 2):
+
+        c.execute('''SELECT players.id, players.name FROM players 
+            LEFT JOIN (SELECT players.id, count(winner_id) as wins from players left join matches on players.id = winner_id group by players.id) as w on players.id = w.id
+            LEFT JOIN (SELECT players.id, count(match_id) as total_matches from players left join matches on players.id = winner_id or players.id = loser_id group by players.id) as tm on players.id = tm.id
+            ORDER BY w.wins DESC LIMIT 2 OFFSET ''' + str(i) + ';')
+
+        query_result = c.fetchall()
+
+        if result != None:
+            result = result, (query_result[0][0], query_result[0][1], query_result[1][0], query_result[1][1])
+        else:
+            result = (query_result[0][0], query_result[0][1], query_result[1][0], query_result[1][1])
+
+    DB.close()
+
+    return result
