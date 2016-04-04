@@ -1,11 +1,15 @@
-<html>
+{% extends "main.html" %}
+{% block content %}
 
-	<head>
-		  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-  </script>
-<script src="//apis.google.com/js/platform.js?onload=start" async defer> </script>
-	</head>
-	<body>
+<div class="row navbar-default">
+    <div class="col-md-6">
+        <h1>Things to Do in Kyoto</h1>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h3>Login</h3>
 		<div id="signinButton">
 			<span class="g-signin"
 				data-scope="openid email"
@@ -17,18 +21,9 @@
 				data-approvalprompt="force">
 			</span>
 		</div>
-		<div id="signoutButton">
-			<span class="g-signout"
-				data-scope="openid email"
-				data-clientid="259092307499-qn4sifg5mhd7s6qk7bd975rklcpsl6en.apps.googleusercontent.com"
-				data-redirecturi="postmessage"
-				data-accesstype="offline"
-				data-cookiepolicy="single_host_origin"
-				data-callback="signOutCallback"
-				data-approvalprompt="force">
-			</span>
-		</div>
 		<div id="result"></div>
+	</div>
+</div>
 
 		<script>
 		function signInCallback(authResult) {
@@ -59,37 +54,6 @@
 				});
 			}
 		}
-
-		// function signOutCallback(authResult) {
-		// 	if (authResult['code']) {
-		// 		// Hide sign-in button after authorized
-		// 		$('#signoutButton').attr('style', 'display: none');
-		// 		// Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect to the main page
-		// 		$.ajax({
-		// 			type: 'POST',
-		// 			url: '/gdisconnect',
-		// 			processData: false,
-		// 			contentType: 'application/octet-stream; charset=utf-8',
-		// 			data: authResult['code'],
-		// 			success: function(result) {
-		// 				if (result) {
-		// 					$('#result').html('Logout Successful!</br>' + result + '</br>Redirecting...');
-		// 					setTimeout(function() {
-		// 						window.location.href = '/catalogs/1/';
-		// 					}, 4000);
-		// 				}
-		// 				else if (authResult['error']) {
-		// 					console.log('There was an error: ' + authResult['error']);
-		// 				}
-		// 				else {
-		// 					$('#result').html('Failed to make a server-side call. Check your configuration and console.');
-		// 				}
-		// 			}
-		// 		});
-		// 	}
-		// }
 		</script>
 
-	</body>
-
-</html>
+{% endblock %}
