@@ -329,7 +329,7 @@ def deleteCatalogItem(catalog_id, item_id):
 @app.route('/catalogs/JSON/')
 def catalogsJSON():
     catalogs = session.query(Catalog).all()
-    return jsonify(catalogs=[i.serialize for c in catalogs])
+    return jsonify(catalogs=[c.serialize for c in catalogs])
 
 @app.route('/catalogs/<int:catalog_id>/item/JSON')
 def catalogItemJSON(catalog_id):
@@ -339,7 +339,7 @@ def catalogItemJSON(catalog_id):
 
 @app.route('/catalogs/<int:catalog_id>/item/<int:item_id>/JSON')
 def itemJSON(catalog_id, item_id):
-    item = session.query(Item).filter_by(item_id=item_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(item = item.serialize)
 
 
