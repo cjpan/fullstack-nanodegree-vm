@@ -18,7 +18,7 @@ class Catalog(Base):
 
 	name = Column(String(50), nullable = False)
 	id = Column(Integer, primary_key = True)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete="SET NULL"))
 	user = relationship(User)
 
 	@property
@@ -36,9 +36,9 @@ class Item(Base):
 	picture_url = Column(String)
 	homepage_url = Column(String)
 	id = Column(Integer, primary_key = True)
-	catalog_id = Column(Integer, ForeignKey('catalog.id'))
+	catalog_id = Column(Integer, ForeignKey('catalog.id', ondelete="CASCADE"))
 	catalog = relationship(Catalog)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete="SET NULL"))
 	user = relationship(User)
 
 	@property
